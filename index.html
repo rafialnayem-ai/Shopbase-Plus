@@ -169,7 +169,7 @@
 </div>
 
 <script>
-    const BACKEND_URL = 'https://shopbasebd-backend.onrender.com/'; // Replace with your exact Render URL
+    const BACKEND_URL = 'https://shopbasebd-backend.onrender.com'; // Removed the trailing slash
 
     let currentImages = [];
     let currentPage = 1;
@@ -183,7 +183,7 @@
     async function subscribeToPush() {
         if ('serviceWorker' in navigator) {
             try {
-                const register = await navigator.serviceWorker.register('/sw.js');
+                const register = await navigator.serviceWorker.register('./sw.js');
                 const subscription = await register.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)

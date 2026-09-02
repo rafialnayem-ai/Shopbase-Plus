@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shopbase Plus</title>
-    <link rel="icon" type="image/png" href="logo.png">
+    <title>Product Dashboard</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f6f8; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
@@ -169,8 +168,7 @@
 </div>
 
 <script>
-    const BACKEND_URL = 'https://shopbasebd-backend-production.up.railway.app'; // OLD: 'https://shopbasebd-backend.onrender.com' — Render blocked by shopbasebd.com // Removed the trailing slash
-
+    const API_BASE = 'https://shopbasebd-backend-production.up.railway.app';
     let currentImages = [];
     let currentPage = 1;
     let currentCategory = '2';
@@ -183,12 +181,12 @@
     async function subscribeToPush() {
         if ('serviceWorker' in navigator) {
             try {
-                const register = await navigator.serviceWorker.register('./sw.js');
+                const register = await navigator.serviceWorker.register('/sw.js');
                 const subscription = await register.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
                 });
-                await fetch(`${BACKEND_URL}/subscribe`, {
+                await fetch(`${API_BASE}/subscribe`, {
                     method: 'POST',
                     body: JSON.stringify(subscription),
                     headers: { 'Content-Type': 'application/json' }
@@ -268,7 +266,7 @@
         list.innerHTML = '<div class="loader">Searching...</div>';
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/search?q=${encodeURIComponent(query)}`);
+            const res = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`);
             const data = await res.json();
             if (data.products && data.products.length > 0) {
                 renderProducts(data.products, false);
@@ -296,7 +294,7 @@
         }
 
         try {
-            const res = await fetch(`${BACKEND_URL}/api/products?page=${page}&category=${category}`);
+            const res = await fetch(`${API_BASE}/api/products?page=${page}&category=${category}`);
             const data = await res.json();
             
             if (append) {
@@ -372,9 +370,9 @@
         try {
             let res;
             if (product.isSearch) {
-                res = await fetch(`${BACKEND_URL}/api/product-details/${product.pid}`);
+                res = await fetch(`${API_BASE}/api/product-details/${product.pid}`);
             } else {
-                res = await fetch(`${BACKEND_URL}/api/details/${product.postId}`);
+                res = await fetch(`${API_BASE}/api/details/${product.postId}`);
             }
             
             const data = await res.json();
@@ -489,7 +487,7 @@
 
         for (let i = 0; i < images.length; i++) {
             try {
-                const downloadUrl = `${BACKEND_URL}/api/download?url=${encodeURIComponent(images[i])}`;
+                const downloadUrl = `${API_BASE}/api/download?url=${encodeURIComponent(images[i])}`;
                 
                 const a = document.createElement('a');
                 a.style.display = 'none';

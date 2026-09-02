@@ -169,6 +169,8 @@
 </div>
 
 <script>
+    const BACKEND_URL = 'https://shopbasebd-backend.onrender.com/'; // Replace with your exact Render URL
+
     let currentImages = [];
     let currentPage = 1;
     let currentCategory = '2';
@@ -186,7 +188,7 @@
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
                 });
-                await fetch('https://shopbasebd-backend.onrender.com/subscribe', {
+                await fetch(`${BACKEND_URL}/subscribe`, {
                     method: 'POST',
                     body: JSON.stringify(subscription),
                     headers: { 'Content-Type': 'application/json' }
@@ -266,7 +268,7 @@
         list.innerHTML = '<div class="loader">Searching...</div>';
 
         try {
-            const res = await fetch(`https://shopbasebd-backend.onrender.com/api/search?q=${encodeURIComponent(query)}`);
+            const res = await fetch(`${BACKEND_URL}/api/search?q=${encodeURIComponent(query)}`);
             const data = await res.json();
             if (data.products && data.products.length > 0) {
                 renderProducts(data.products, false);
@@ -294,7 +296,7 @@
         }
 
         try {
-            const res = await fetch(`https://shopbasebd-backend.onrender.com/api/products?page=${page}&category=${category}`);
+            const res = await fetch(`${BACKEND_URL}/api/products?page=${page}&category=${category}`);
             const data = await res.json();
             
             if (append) {
@@ -370,9 +372,9 @@
         try {
             let res;
             if (product.isSearch) {
-                res = await fetch(`https://shopbasebd-backend.onrender.com/api/product-details/${product.pid}`);
+                res = await fetch(`${BACKEND_URL}/api/product-details/${product.pid}`);
             } else {
-                res = await fetch(`https://shopbasebd-backend.onrender.com/api/details/${product.postId}`);
+                res = await fetch(`${BACKEND_URL}/api/details/${product.postId}`);
             }
             
             const data = await res.json();
@@ -487,7 +489,7 @@
 
         for (let i = 0; i < images.length; i++) {
             try {
-                const downloadUrl = `https://shopbasebd-backend.onrender.com/api/download?url=${encodeURIComponent(images[i])}`;
+                const downloadUrl = `${BACKEND_URL}/api/download?url=${encodeURIComponent(images[i])}`;
                 
                 const a = document.createElement('a');
                 a.style.display = 'none';

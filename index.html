@@ -477,7 +477,7 @@
         }
     }
 
-    // Fix: Download via backend proxy to bypass CORS restrictions
+    // Fix: Download via backend proxy as Blob to bypass multi-download restrictions
     async function downloadAllImages(images, btnElement) {
         if (!images || images.length === 0) return alert('No images found.');
         
@@ -487,18 +487,27 @@
 
         for (let i = 0; i < images.length; i++) {
             try {
-                const downloadUrl = `${API_BASE}/api/download?url=${encodeURIComponent(images[i])}`;
+                // Fetch as blob to ensure full quality and bypass strict browser multi-download blocking
+                const response = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(images[i])}`);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
                 
                 const a = document.createElement('a');
                 a.style.display = 'none';
-                a.href = downloadUrl;
-                a.download = images[i].substring(images[i].lastIndexOf('/') + 1);
+                a.href = blobUrl;
+                
+                let fileName = images[i].substring(images[i].lastIndexOf('/') + 1).split('?')[0];
+                if (!fileName) fileName = `product_image_${i + 1}.jpg`;
+                a.download = fileName;
                 
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 
-                await new Promise(resolve => setTimeout(resolve, 800)); // Delay prevents browser from blocking
+                window.URL.revokeObjectURL(blobUrl);
+                
+                // Increased delay to allow browsers to process each download securely
+                await new Promise(resolve => setTimeout(resolve, 1500)); 
             } catch (err) {
                 console.error('Download error:', err);
             }

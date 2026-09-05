@@ -137,23 +137,39 @@
     
     <!-- Product Details Modal -->
     <div class="modal" id="detailsModal">
-        <div class="modal-header">
-            <span id="modalTitle" style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">Details</span>
-            <button class="close-btn" onclick="closeModal()">Close ✖</button>
+        <div class="modal-header" style="justify-content: flex-end;">
+            <button class="close-btn" onclick="closeModal()">✖</button>
         </div>
         <div class="modal-content">
             <div id="modalImageGallery" style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px;"></div>
-            <div id="modalInnerTitle" style="font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #333;"></div>
-            <div id="modalDescription"></div>
-            <div id="modalExtraLoader" style="color: #888; font-size: 12px; margin-top: 10px;">Fetching Details...</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                <div id="modalPrice" style="font-weight: bold; color: #ff6b6b; font-size: 14px;"></div>
-                <div id="modalStock" style="font-size: 13px; font-weight: bold;"></div>
+            
+            <div id="modalDetailsBlock" style="margin-bottom: 15px; line-height: 1.8;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div id="modalPrice" style="font-weight: bold; color: #ff6b6b; font-size: 14px;"></div>
+                    <div id="modalStock" style="font-size: 13px; font-weight: bold;"></div>
+                </div>
+                <div id="modalRating" style="color: #f39c12; font-size: 16px; letter-spacing: 2px;"></div>
+                <div class="suggested-price" id="modalSuggestedPrice" style="margin-top: 0;"></div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <div class="sku-text" id="modalSku" style="margin-top: 0; margin-bottom: 0;"></div>
+                    <span onclick="copyText('modalSku', 'SKU')" style="cursor:pointer; font-size:16px;" title="Copy SKU">📋</span>
+                </div>
             </div>
-            <div id="modalRating" style="color: #f39c12; font-size: 16px; margin-top: 5px; letter-spacing: 2px;"></div>
-            <div class="suggested-price" id="modalSuggestedPrice"></div>
-            <div class="sku-text" id="modalSku"></div>
-            <button class="download-btn" id="downloadBtn">Download</button>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 15px;">
+                <div style="display: flex; align-items: flex-start; gap: 5px; flex: 1;">
+                    <div id="modalInnerTitle" style="font-size: 16px; font-weight: bold; color: #333;"></div>
+                    <span onclick="copyText('modalInnerTitle', 'Title')" style="cursor:pointer; font-size:16px;" title="Copy Title">📋</span>
+                </div>
+                <button class="download-btn" id="downloadBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0;">Download</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-weight: bold; color: #333;">
+                Description <span onclick="copyText('modalDescription', 'Description')" style="cursor:pointer; font-size:16px;" title="Copy Description">📋</span>
+            </div>
+            <div id="modalDescription"></div>
+            
+            <div id="modalExtraLoader" style="color: #888; font-size: 12px; margin-top: 10px;">Fetching Details...</div>
         </div>
     </div>
 
@@ -165,6 +181,9 @@
         <button class="lightbox-nav lightbox-next" onclick="changeLightboxImage(1)">❯</button>
         <div class="lightbox-counter" id="lightboxCounter"></div>
     </div>
+    
+    <!-- Copy Toast -->
+    <div id="copyToast" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; z-index: 10000; font-size: 14px; white-space: nowrap;"></div>
 </div>
 
 <script>
@@ -342,7 +361,6 @@
     async function openModal(product) {
         history.pushState({ modal: 'details' }, '', '#details');
         document.getElementById('detailsModal').style.display = 'flex';
-        document.getElementById('modalTitle').innerText = product.title;
         
         const gallery = document.getElementById('modalImageGallery');
         const innerTitleElem = document.getElementById('modalInnerTitle');
@@ -377,7 +395,13 @@
             
             const data = await res.json();
             loader.style.display = 'none';
-            priceElem.innerText = data.suggestedPrice || '';
+            
+            if (data.suggestedPrice) {
+                priceElem.innerText = JSON.parse(`"\\u09AA\\u09CD\\u09B0\\u09CB\\u09A1\\u09BE\\u0995\\u09CD\\u099F\\u09BF\\u09B0 \\u09B8\\u09BE\\u099C\\u09C7\\u09B8\\u09CD\\u099F\\u09C7\\u09A1 \\u09AC\\u09BF\\u0995\\u09CD\\u09B0\\u09DF \\u09AE\\u09C2\\u09B2\\u09CD\\u09AF \\u09B8\\u09B0\\u09CD\\u09AC\\u09CB\\u099A\\u09CD\\u099A "`) + data.suggestedPrice;
+            } else {
+                priceElem.innerText = '';
+            }
+            
             skuElem.innerText = data.sku || 'SKU: N/A';
             
             if (data.isStockAvailable !== undefined) {
@@ -516,6 +540,29 @@
         btnElement.innerText = 'Download';
         btnElement.disabled = false;
         btnElement.style.background = '#28a745';
+    }
+
+    function copyText(elementId, labelName) {
+        const element = document.getElementById(elementId);
+        let text = element.innerText || element.textContent;
+        
+        if (labelName === 'SKU') {
+            text = text.replace(/^SKU:\s*/i, '');
+        }
+
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied ' + labelName);
+        }).catch(err => console.error('Copy failed', err));
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('copyToast');
+        if (!toast) return;
+        toast.innerText = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 2000);
     }
 </script>
 </body>

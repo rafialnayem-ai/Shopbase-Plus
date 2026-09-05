@@ -144,13 +144,13 @@
             <div id="modalImageGallery" style="display: flex; gap: 10px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px;"></div>
             
             <div id="modalDetailsBlock" style="margin-bottom: 15px; line-height: 1.8;">
-                <div style="display: flex; gap: 15px; align-items: center;">
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                     <div id="modalPrice" style="font-weight: bold; color: #ff6b6b; font-size: 14px;"></div>
                     <div id="modalStock" style="font-size: 13px; font-weight: bold;"></div>
+                    <div id="modalRating" style="color: #f39c12; font-size: 16px; letter-spacing: 2px; line-height: 1;"></div>
                 </div>
-                <div id="modalRating" style="color: #f39c12; font-size: 16px; letter-spacing: 2px;"></div>
-                <div class="suggested-price" id="modalSuggestedPrice" style="margin-top: 0;"></div>
-                <div style="display: flex; align-items: center; gap: 5px;">
+                <div class="suggested-price" id="modalSuggestedPrice" style="margin-top: 5px;"></div>
+                <div style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
                     <div class="sku-text" id="modalSku" style="margin-top: 0; margin-bottom: 0;"></div>
                     <span onclick="copyText('modalSku', 'SKU')" style="cursor:pointer; font-size:16px;" title="Copy SKU">📋</span>
                 </div>

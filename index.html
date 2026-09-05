@@ -152,20 +152,20 @@
                 <div class="suggested-price" id="modalSuggestedPrice" style="margin-top: 5px;"></div>
                 <div style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
                     <div class="sku-text" id="modalSku" style="margin-top: 0; margin-bottom: 0;"></div>
-                    <span onclick="copyText('modalSku', 'SKU')" style="cursor:pointer; font-size:16px;" title="Copy SKU">📋</span>
+                    <span onclick="copyText('modalSku', 'SKU', this)" style="cursor:pointer; font-size:16px;" title="Copy SKU">📋</span>
                 </div>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 15px;">
                 <div style="display: flex; align-items: flex-start; gap: 5px; flex: 1;">
                     <div id="modalInnerTitle" style="font-size: 16px; font-weight: bold; color: #333;"></div>
-                    <span onclick="copyText('modalInnerTitle', 'Title')" style="cursor:pointer; font-size:16px;" title="Copy Title">📋</span>
+                    <span onclick="copyText('modalInnerTitle', 'Title', this)" style="cursor:pointer; font-size:16px;" title="Copy Title">📋</span>
                 </div>
                 <button class="download-btn" id="downloadBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0;">Download</button>
             </div>
 
             <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-weight: bold; color: #333;">
-                Description <span onclick="copyText('modalDescription', 'Description')" style="cursor:pointer; font-size:16px;" title="Copy Description">📋</span>
+                Description <span onclick="copyText('modalDescription', 'Description', this)" style="cursor:pointer; font-size:16px;" title="Copy Description">📋</span>
             </div>
             <div id="modalDescription"></div>
             
@@ -542,7 +542,7 @@
         btnElement.style.background = '#28a745';
     }
 
-    function copyText(elementId, labelName) {
+    function copyText(elementId, labelName, iconElement) {
         const element = document.getElementById(elementId);
         let text = element.innerText || element.textContent;
         
@@ -551,18 +551,12 @@
         }
 
         navigator.clipboard.writeText(text).then(() => {
-            showToast('Copied ' + labelName);
+            const originalIcon = iconElement.innerText;
+            iconElement.innerText = '✅';
+            setTimeout(() => {
+                iconElement.innerText = originalIcon;
+            }, 2000);
         }).catch(err => console.error('Copy failed', err));
-    }
-
-    function showToast(message) {
-        const toast = document.getElementById('copyToast');
-        if (!toast) return;
-        toast.innerText = message;
-        toast.style.display = 'block';
-        setTimeout(() => {
-            toast.style.display = 'none';
-        }, 2000);
     }
 </script>
 </body>

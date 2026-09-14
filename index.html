@@ -690,12 +690,26 @@
                     btn.innerText = `Preparing Image ${overallIndex} of ${postImagesList.length}...`;
                     
                     const response = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(currentChunk[i])}`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to download image ${overallIndex}`);
+                    }
+                    
                     const blob = await response.blob();
                     
                     let fileName = currentChunk[i].substring(currentChunk[i].lastIndexOf('/') + 1).split('?')[0];
-                    if (!fileName) fileName = `post_image_${overallIndex}.jpg`;
                     
-                    formData.append('images', blob, fileName);
+                    if (!fileName || !fileName.includes('.')) {
+                        fileName = `post_image_${overallIndex}.jpg`;
+                    }
+                    
+                    if (fileName.toLowerCase().endsWith('.jfif')) {
+                        fileName = fileName.replace(/\.jfif$/i, '.jpg');
+                    }
+                    
+                    const fileType = blob.type && blob.type.startsWith('image/') ? blob.type : 'image/jpeg';
+                    const file = new File([blob], fileName, { type: fileType });
+                    
+                    formData.append('images', file);
                 } catch (err) {
                     console.error('Failed to fetch image blob:', err);
                 }

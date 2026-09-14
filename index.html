@@ -693,21 +693,35 @@
                     if (!response.ok) {
                         throw new Error(`Failed to download image ${overallIndex}`);
                     }
+                    const rawBlob = await response.blob();
                     
-                    const blob = await response.blob();
+                    const highQualityBlob = await new Promise((resolve) => {
+                        const img = new Image();
+                        const objUrl = URL.createObjectURL(rawBlob);
+                        
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0);
+                            
+                            canvas.toBlob((b) => {
+                                resolve(b || rawBlob);
+                                URL.revokeObjectURL(objUrl);
+                            }, 'image/jpeg', 1.0);
+                        };
+                        
+                        img.onerror = () => {
+                            resolve(rawBlob);
+                            URL.revokeObjectURL(objUrl);
+                        };
+                        
+                        img.src = objUrl;
+                    });
                     
-                    let fileName = currentChunk[i].substring(currentChunk[i].lastIndexOf('/') + 1).split('?')[0];
-                    
-                    if (!fileName || !fileName.includes('.')) {
-                        fileName = `post_image_${overallIndex}.jpg`;
-                    }
-                    
-                    if (fileName.toLowerCase().endsWith('.jfif')) {
-                        fileName = fileName.replace(/\.jfif$/i, '.jpg');
-                    }
-                    
-                    const fileType = blob.type && blob.type.startsWith('image/') ? blob.type : 'image/jpeg';
-                    const file = new File([blob], fileName, { type: fileType });
+                    const fileName = `post_image_${overallIndex}.jpg`;
+                    const file = new File([highQualityBlob], fileName, { type: 'image/jpeg' });
                     
                     formData.append('images', file);
                 } catch (err) {

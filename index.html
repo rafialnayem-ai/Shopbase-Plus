@@ -83,6 +83,9 @@
         .post-submit-btn { background: #0066ff; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; }
         .post-submit-btn:disabled { background: #444; cursor: not-allowed; }
         .post-message { text-align: center; font-size: 13px; font-weight: bold; min-height: 18px; }
+        .post-platforms { display: flex; justify-content: space-between; margin-bottom: 10px; background: #252830; padding: 10px 15px; border-radius: 8px; border: 1px solid #333; }
+        .post-platforms label { margin: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #e1e1e1; user-select: none; font-weight: bold; }
+        .post-platforms input[type="checkbox"] { width: 16px; height: 16px; accent-color: #0066ff; cursor: pointer; }
         
         /* Desktop & Tablet Professional UI */
         @media (min-width: 768px) {
@@ -217,6 +220,12 @@
                     <option value="sundorica">1. Sundorica</option>
                     <option value="mim">2. Mim's Drop</option>
                 </select>
+            </div>
+            
+            <div class="post-platforms">
+                <label><input type="checkbox" id="postFb" value="facebook" checked> Facebook</label>
+                <label><input type="checkbox" id="postIg" value="instagram" checked> Instagram</label>
+                <label><input type="checkbox" id="postTt" value="tiktok" checked> TikTok</label>
             </div>
             
             <textarea id="postCaptionBox" class="post-caption-box" placeholder="Write your caption here..."></textarea>
@@ -731,9 +740,9 @@
 
             formData.append('caption', chunkIndex === 0 ? caption : `${caption} (Part ${chunkIndex + 1})`);
             formData.append('account', account);
-            formData.append('facebook', true);
-            formData.append('instagram', true);
-            formData.append('tiktok', true);
+            formData.append('facebook', document.getElementById('postFb').checked);
+            formData.append('instagram', document.getElementById('postIg').checked);
+            formData.append('tiktok', document.getElementById('postTt').checked);
 
             try {
                 // Real-time button text update for API upload

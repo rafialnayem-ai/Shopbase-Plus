@@ -66,6 +66,23 @@
         @media (max-width: 767px) {
             .lightbox-nav { display: none; }
         }
+
+        /* Post Modal UI */
+        .post-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
+        .post-modal-content { background: #1e2128; width: 95%; max-width: 500px; padding: 20px; border-radius: 12px; color: #e1e1e1; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .post-modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .post-modal-header h3 { margin: 0; font-size: 18px; color: #fff; }
+        .post-modal-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+        .post-header-actions { display: flex; justify-content: flex-end; margin-bottom: 5px; }
+        .post-account-select { background: #252830; color: white; border: 1px solid #333; padding: 8px; border-radius: 6px; outline: none; cursor: pointer; }
+        .post-caption-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #252830; color: white; resize: vertical; outline: none; min-height: 80px; font-family: inherit; }
+        .post-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
+        .post-preview-item { position: relative; width: 100%; padding-top: 100%; border-radius: 8px; overflow: hidden; background: #111; }
+        .post-preview-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .post-remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(255, 50, 50, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .post-submit-btn { background: #0066ff; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; }
+        .post-submit-btn:disabled { background: #444; cursor: not-allowed; }
+        .post-message { text-align: center; font-size: 13px; font-weight: bold; min-height: 18px; }
         
         /* Desktop & Tablet Professional UI */
         @media (min-width: 768px) {
@@ -162,7 +179,10 @@
                     <div id="modalInnerTitle" style="font-size: 16px; font-weight: bold; color: #333;"></div>
                     <span onclick="copyText('modalInnerTitle', 'Title', this)" style="cursor:pointer; font-size:16px;" title="Copy Title">📋</span>
                 </div>
-                <button class="download-btn" id="downloadBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0;">Download</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="download-btn" id="postBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0; background: #0066ff;">Post</button>
+                    <button class="download-btn" id="downloadBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0;">Download</button>
+                </div>
             </div>
 
             <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-weight: bold; color: #333;">
@@ -183,6 +203,34 @@
         <div class="lightbox-counter" id="lightboxCounter"></div>
     </div>
     
+    <!-- Post Modal -->
+    <div class="post-modal-overlay" id="postModalOverlay">
+        <div class="post-modal-content">
+            <div class="post-modal-header">
+                <h3>Auto Poster</h3>
+                <button class="post-modal-close" onclick="closePostModal()">✖</button>
+            </div>
+            
+            <div class="post-header-actions">
+                <select id="postAccountSelect" class="post-account-select">
+                    <option value="all">All</option>
+                    <option value="sundorica">1. Sundorica</option>
+                    <option value="mim">2. Mim's Drop</option>
+                </select>
+            </div>
+            
+            <textarea id="postCaptionBox" class="post-caption-box" placeholder="Write your caption here..."></textarea>
+            
+            <div id="postPreviewContainer" class="post-preview-grid"></div>
+            
+            <button id="postSubmitBtn" class="post-submit-btn" onclick="submitPost()">Publish Now</button>
+            <div id="postMessage" class="post-message"></div>
+        </div>
+    </div>
+
+    <!-- Realtime Notification Toast -->
+    <div id="notificationToast" style="display: none; position: fixed; top: 20px; right: 20px; background: rgba(0, 102, 255, 0.9); color: white; padding: 15px 25px; border-radius: 8px; z-index: 10001; font-size: 15px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: opacity 0.3s;"></div>
+
     <!-- Copy Toast -->
     <div id="copyToast" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; z-index: 10000; font-size: 14px; white-space: nowrap;"></div>
 </div>
@@ -433,6 +481,9 @@
 
         const dBtn = document.getElementById('downloadBtn');
         dBtn.onclick = () => downloadAllImages(currentImages, dBtn);
+
+        const pBtn = document.getElementById('postBtn');
+        pBtn.onclick = () => openPostModal();
     }
 
     function renderGallery(images) {
@@ -559,6 +610,176 @@
             }, 2000);
         }).catch(err => console.error('Copy failed', err));
     }
+
+    // Post Features
+    let postImagesList = [];
+
+    function openPostModal() {
+        document.getElementById('postModalOverlay').style.display = 'flex';
+        postImagesList = [...currentImages];
+        document.getElementById('postCaptionBox').value = '';
+        document.getElementById('postMessage').innerText = '';
+        renderPostPreviews();
+    }
+
+    function closePostModal() {
+        document.getElementById('postModalOverlay').style.display = 'none';
+    }
+
+    function renderPostPreviews() {
+        const container = document.getElementById('postPreviewContainer');
+        container.innerHTML = '';
+        
+        postImagesList.forEach((imgUrl, index) => {
+            const item = document.createElement('div');
+            item.className = 'post-preview-item';
+            
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'post-remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = () => {
+                postImagesList.splice(index, 1);
+                renderPostPreviews();
+            };
+            
+            item.appendChild(img);
+            item.appendChild(removeBtn);
+            container.appendChild(item);
+        });
+    }
+
+    async function submitPost() {
+        const msgEl = document.getElementById('postMessage');
+        const btn = document.getElementById('postSubmitBtn');
+        
+        if (postImagesList.length === 0) {
+            msgEl.style.color = "#ff4d4d";
+            msgEl.innerText = "Please keep at least one media file.";
+            return;
+        }
+
+        btn.disabled = true;
+        msgEl.style.color = "#ffb84d";
+        msgEl.innerText = "";
+
+        const caption = document.getElementById('postCaptionBox').value;
+        const account = document.getElementById('postAccountSelect').value;
+        const renderApiUrl = 'https://crosspost-o4h5.onrender.com/api/publish';
+        
+        // 10 ti images er beshi hole auto split korbe (Chunking logic)
+        const chunkSize = 10;
+        const imageChunks = [];
+        for (let i = 0; i < postImagesList.length; i += chunkSize) {
+            imageChunks.push(postImagesList.slice(i, i + chunkSize));
+        }
+
+        let successCount = 0;
+
+        for (let chunkIndex = 0; chunkIndex < imageChunks.length; chunkIndex++) {
+            const currentChunk = imageChunks[chunkIndex];
+            const formData = new FormData();
+            
+            // Fetch blobs for this chunk
+            for (let i = 0; i < currentChunk.length; i++) {
+                try {
+                    let overallIndex = (chunkIndex * chunkSize) + i + 1;
+                    // Real-time button text update for image preparation
+                    btn.innerText = `Preparing Image ${overallIndex} of ${postImagesList.length}...`;
+                    
+                    const response = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(currentChunk[i])}`);
+                    const blob = await response.blob();
+                    
+                    let fileName = currentChunk[i].substring(currentChunk[i].lastIndexOf('/') + 1).split('?')[0];
+                    if (!fileName) fileName = `post_image_${overallIndex}.jpg`;
+                    
+                    formData.append('images', blob, fileName);
+                } catch (err) {
+                    console.error('Failed to fetch image blob:', err);
+                }
+            }
+
+            formData.append('caption', chunkIndex === 0 ? caption : `${caption} (Part ${chunkIndex + 1})`);
+            formData.append('account', account);
+            formData.append('facebook', true);
+            formData.append('instagram', true);
+            formData.append('tiktok', true);
+
+            try {
+                // Real-time button text update for API upload
+                if (imageChunks.length > 1) {
+                    btn.innerText = `Publishing Part ${chunkIndex + 1} of ${imageChunks.length}... Please Wait`;
+                } else {
+                    btn.innerText = `Publishing ${currentChunk.length} Media... Please Wait`;
+                }
+
+                const res = await fetch(renderApiUrl, { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if(res.ok) {
+                    successCount++;
+                } else {
+                    throw new Error(data.message || "Upload failed");
+                }
+            } catch (err) {
+                msgEl.style.color = "#ff4d4d";
+                msgEl.innerText = `Failed! Files might be too large or Server Timeout.`;
+                btn.disabled = false;
+                btn.innerText = "Publish Now";
+                return;
+            }
+        }
+
+        if (successCount === imageChunks.length) {
+            msgEl.style.color = "#4caf50";
+            msgEl.innerText = "";
+            btn.innerText = "Publish Done !";
+            btn.style.background = "#28a745";
+            
+            setTimeout(() => {
+                closePostModal();
+                btn.innerText = "Publish Now";
+                btn.style.background = "#0066ff";
+            }, 3000);
+        } else {
+            btn.disabled = false;
+            btn.innerText = "Publish Now";
+        }
+    }
+
+    // Server-Sent Events (SSE) Logic for Real-time Notifications
+    let sseSource;
+    function connectSSE() {
+        if (sseSource) sseSource.close();
+        
+        // This endpoint will be added to the backend code (next step)
+        sseSource = new EventSource('https://crosspost-o4h5.onrender.com/api/notifications');
+        
+        sseSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            showNotification(data.message);
+        };
+    }
+
+    function showNotification(message) {
+        const toast = document.getElementById('notificationToast');
+        toast.innerText = message;
+        toast.style.display = 'block';
+        toast.style.opacity = '1';
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => { toast.style.display = 'none'; }, 300);
+        }, 4000);
+    }
+
+    // Connect to SSE on load
+    window.addEventListener('DOMContentLoaded', () => {
+        connectSSE();
+    });
+
 </script>
 </body>
 </html>

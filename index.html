@@ -628,6 +628,12 @@
         postImagesList = [...currentImages];
         document.getElementById('postCaptionBox').value = '';
         document.getElementById('postMessage').innerText = '';
+        
+        const btn = document.getElementById('postSubmitBtn');
+        btn.disabled = false;
+        btn.innerText = "Publish Now";
+        btn.style.background = "#0066ff";
+        
         renderPostPreviews();
     }
 
@@ -777,6 +783,7 @@
             
             setTimeout(() => {
                 closePostModal();
+                btn.disabled = false;
                 btn.innerText = "Publish Now";
                 btn.style.background = "#0066ff";
             }, 3000);

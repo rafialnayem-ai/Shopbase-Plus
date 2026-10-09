@@ -67,26 +67,6 @@
             .lightbox-nav { display: none; }
         }
 
-        /* Post Modal UI */
-        .post-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
-        .post-modal-content { background: #1e2128; width: 95%; max-width: 500px; padding: 20px; border-radius: 12px; color: #e1e1e1; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .post-modal-header { display: flex; justify-content: space-between; align-items: center; }
-        .post-modal-header h3 { margin: 0; font-size: 18px; color: #fff; }
-        .post-modal-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
-        .post-header-actions { display: flex; justify-content: flex-end; margin-bottom: 5px; }
-        .post-account-select { background: #252830; color: white; border: 1px solid #333; padding: 8px; border-radius: 6px; outline: none; cursor: pointer; }
-        .post-caption-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #252830; color: white; resize: vertical; outline: none; min-height: 80px; font-family: inherit; }
-        .post-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
-        .post-preview-item { position: relative; width: 100%; padding-top: 100%; border-radius: 8px; overflow: hidden; background: #111; }
-        .post-preview-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        .post-remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(255, 50, 50, 0.9); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .post-submit-btn { background: #0066ff; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; text-align: center; }
-        .post-submit-btn:disabled { background: #444; cursor: not-allowed; }
-        .post-message { text-align: center; font-size: 13px; font-weight: bold; min-height: 18px; }
-        .post-platforms { display: flex; justify-content: space-between; margin-bottom: 10px; background: #252830; padding: 10px 15px; border-radius: 8px; border: 1px solid #333; }
-        .post-platforms label { margin: 0; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; color: #e1e1e1; user-select: none; font-weight: bold; }
-        .post-platforms input[type="checkbox"] { width: 16px; height: 16px; accent-color: #0066ff; cursor: pointer; }
-        
         /* Desktop & Tablet Professional UI */
         @media (min-width: 768px) {
             body { align-items: flex-start; } 
@@ -182,10 +162,7 @@
                     <div id="modalInnerTitle" style="font-size: 16px; font-weight: bold; color: #333;"></div>
                     <span onclick="copyText('modalInnerTitle', 'Title', this)" style="cursor:pointer; font-size:16px;" title="Copy Title">📋</span>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="download-btn" id="postBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0; background: #0066ff;">Post</button>
-                    <button class="download-btn" id="downloadBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0;">Download</button>
-                </div>
+                <button class="download-btn" id="downloadBtn" style="margin-top: 0; width: auto; padding: 8px 15px; flex-shrink: 0;">Download</button>
             </div>
 
             <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-weight: bold; color: #333;">
@@ -206,40 +183,6 @@
         <div class="lightbox-counter" id="lightboxCounter"></div>
     </div>
     
-    <!-- Post Modal -->
-    <div class="post-modal-overlay" id="postModalOverlay">
-        <div class="post-modal-content">
-            <div class="post-modal-header">
-                <h3>Auto Poster</h3>
-                <button class="post-modal-close" onclick="closePostModal()">✖</button>
-            </div>
-            
-            <div class="post-header-actions">
-                <select id="postAccountSelect" class="post-account-select">
-                    <option value="all">All</option>
-                    <option value="sundorica">1. Sundorica</option>
-                    <option value="mim">2. Mim's Drop</option>
-                </select>
-            </div>
-            
-            <div class="post-platforms">
-                <label><input type="checkbox" id="postFb" value="facebook" checked> Facebook</label>
-                <label><input type="checkbox" id="postIg" value="instagram" checked> Instagram</label>
-                <label><input type="checkbox" id="postTt" value="tiktok" checked> TikTok</label>
-            </div>
-            
-            <textarea id="postCaptionBox" class="post-caption-box" placeholder="Write your caption here..."></textarea>
-            
-            <div id="postPreviewContainer" class="post-preview-grid"></div>
-            
-            <button id="postSubmitBtn" class="post-submit-btn" onclick="submitPost()">Publish Now</button>
-            <div id="postMessage" class="post-message"></div>
-        </div>
-    </div>
-
-    <!-- Realtime Notification Toast -->
-    <div id="notificationToast" style="display: none; position: fixed; top: 20px; right: 20px; background: rgba(0, 102, 255, 0.9); color: white; padding: 15px 25px; border-radius: 8px; z-index: 10001; font-size: 15px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: opacity 0.3s;"></div>
-
     <!-- Copy Toast -->
     <div id="copyToast" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; z-index: 10000; font-size: 14px; white-space: nowrap;"></div>
 </div>
@@ -293,7 +236,7 @@
     });
 
     // Fetch products immediately on load
-    window.onload = () => {
+    document.addEventListener('DOMContentLoaded', () => {
         loadProducts(currentPage, currentCategory, false);
         subscribeToPush();
         
@@ -312,7 +255,7 @@
                 loadProducts(currentPage, currentCategory, true);
             }
         });
-    };
+    });
 
     function toggleMenu() {
         document.getElementById('sideMenu').classList.toggle('open');
@@ -344,6 +287,7 @@
 
         try {
             const res = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`);
+            if (!res.ok) throw new Error(`Search failed with status ${res.status}`);
             const data = await res.json();
             if (data.products && data.products.length > 0) {
                 renderProducts(data.products, false);
@@ -351,6 +295,7 @@
                 list.innerHTML = '<div class="loader">No products found.</div>';
             }
         } catch (error) {
+            console.error('Search error:', error);
             list.innerHTML = '<div class="loader">Search failed.</div>';
         }
     }
@@ -372,12 +317,8 @@
 
         try {
             const res = await fetch(`${API_BASE}/api/products?page=${page}&category=${category}`);
+            if (!res.ok) throw new Error(`Product request failed with status ${res.status}`);
             const data = await res.json();
-            
-            if (append) {
-                const scrollLoader = document.getElementById('scrollLoader');
-                if (scrollLoader) scrollLoader.remove();
-            }
 
             if (data.products && data.products.length > 0) {
                 renderProducts(data.products, append);
@@ -386,8 +327,12 @@
                 if (!append) list.innerHTML = '<div class="loader">No products found.</div>';
             }
         } catch (error) {
+            console.error('Product load error:', error);
+            if (append && currentPage === page) currentPage = Math.max(1, page - 1);
             if (!append) list.innerHTML = '<div class="loader">Failed to load products.</div>';
         } finally {
+            const scrollLoader = document.getElementById('scrollLoader');
+            if (scrollLoader) scrollLoader.remove();
             isLoading = false;
         }
     }
@@ -401,15 +346,31 @@
         products.forEach(p => {
             const card = document.createElement('div');
             card.className = 'product-card';
-            const coverImg = p.images && p.images.length > 0 ? p.images[0] : '';
-            card.innerHTML = `
-                <img src="${coverImg}" loading="lazy" style="width: 70px; height: 105px; object-fit: cover; border-radius: 4px; margin-right: 15px; flex-shrink: 0; display: ${coverImg ? 'block' : 'none'};">
-                <div class="product-info">
-                    <div class="product-title">${p.title}</div>
-                    <div class="product-price">Price: ${p.price}</div>
-                </div>
-                <button class="view-btn" onclick='openModal(${JSON.stringify(p).replace(/'/g, "&apos;")})'>View</button>
-            `;
+            const coverImg = p.thumbnail || (p.images && p.images.length > 0 ? p.images[0] : '');
+            const image = document.createElement('img');
+            image.src = coverImg;
+            image.alt = p.title || 'Product';
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.style.cssText = `width: 70px; height: 105px; object-fit: cover; border-radius: 4px; margin-right: 15px; flex-shrink: 0; display: ${coverImg ? 'block' : 'none'};`;
+
+            const info = document.createElement('div');
+            info.className = 'product-info';
+            const title = document.createElement('div');
+            title.className = 'product-title';
+            title.textContent = p.title || '';
+            const price = document.createElement('div');
+            price.className = 'product-price';
+            price.textContent = `Price: ${p.price || 'N/A'}`;
+            info.append(title, price);
+
+            const viewButton = document.createElement('button');
+            viewButton.className = 'view-btn';
+            viewButton.type = 'button';
+            viewButton.textContent = 'View';
+            viewButton.addEventListener('click', () => openModal(p));
+
+            card.append(image, info, viewButton);
             list.appendChild(card);
         });
     }
@@ -450,7 +411,7 @@
             } else {
                 res = await fetch(`${API_BASE}/api/details/${product.postId}`);
             }
-            
+            if (!res.ok) throw new Error(`Details request failed with status ${res.status}`);
             const data = await res.json();
             loader.style.display = 'none';
             
@@ -485,21 +446,26 @@
                 renderGallery(currentImages);
             }
         } catch (error) {
-            loader.style.display = 'none';
+            console.error('Product details error:', error);
+            loader.innerText = 'Could not load product details.';
         }
 
         const dBtn = document.getElementById('downloadBtn');
         dBtn.onclick = () => downloadAllImages(currentImages, dBtn);
-
-        const pBtn = document.getElementById('postBtn');
-        pBtn.onclick = () => openPostModal();
     }
 
     function renderGallery(images) {
         const gallery = document.getElementById('modalImageGallery');
-        gallery.innerHTML = '';
+        gallery.replaceChildren();
         images.forEach((imgSrc, index) => {
-            gallery.innerHTML += `<img src="${imgSrc}" onclick="openLightbox(${index})" style="width: 100px; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; flex-shrink: 0; cursor: pointer;">`;
+            const image = document.createElement('img');
+            image.src = imgSrc;
+            image.alt = `Product image ${index + 1}`;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.style.cssText = 'width: 100px; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; flex-shrink: 0; cursor: pointer;';
+            image.addEventListener('click', () => openLightbox(index));
+            gallery.appendChild(image);
         });
     }
 
@@ -562,7 +528,6 @@
         }
     }
 
-    // Fix: Download via backend proxy as Blob to bypass multi-download restrictions
     async function downloadAllImages(images, btnElement) {
         if (!images || images.length === 0) return alert('No images found.');
         
@@ -570,37 +535,46 @@
         btnElement.disabled = true;
         btnElement.style.background = '#6c757d';
 
-        for (let i = 0; i < images.length; i++) {
-            try {
-                // Fetch as blob to ensure full quality and bypass strict browser multi-download blocking
-                const response = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(images[i])}`);
-                const blob = await response.blob();
-                const blobUrl = window.URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = blobUrl;
-                
-                let fileName = images[i].substring(images[i].lastIndexOf('/') + 1).split('?')[0];
-                if (!fileName) fileName = `product_image_${i + 1}.jpg`;
-                a.download = fileName;
-                
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                window.URL.revokeObjectURL(blobUrl);
-                
-                // Increased delay to allow browsers to process each download securely
-                await new Promise(resolve => setTimeout(resolve, 1500)); 
-            } catch (err) {
-                console.error('Download error:', err);
+        let failedDownloads = 0;
+        try {
+            for (let i = 0; i < images.length; i++) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(images[i])}`);
+                    if (!response.ok) throw new Error(`Image request failed with status ${response.status}`);
+
+                    // Keep the original response bytes; re-encoding can reduce image quality.
+                    const blob = await response.blob();
+                    const blobUrl = window.URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = blobUrl;
+
+                    let fileName = images[i].substring(images[i].lastIndexOf('/') + 1).split('?')[0];
+                    if (!fileName) fileName = `product_image_${i + 1}.jpg`;
+                    a.download = fileName;
+
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+
+                    await new Promise(resolve => setTimeout(resolve, 250));
+                } catch (err) {
+                    failedDownloads++;
+                    console.error(`Download failed for image ${i + 1}:`, err);
+                }
             }
+        } finally {
+            btnElement.innerText = 'Download';
+            btnElement.disabled = false;
+            btnElement.style.background = '#28a745';
         }
 
-        btnElement.innerText = 'Download';
-        btnElement.disabled = false;
-        btnElement.style.background = '#28a745';
+        if (failedDownloads > 0) {
+            alert(`Could not download ${failedDownloads} of ${images.length} images. Please try again.`);
+        }
     }
 
     function copyText(elementId, labelName, iconElement) {
@@ -619,210 +593,6 @@
             }, 2000);
         }).catch(err => console.error('Copy failed', err));
     }
-
-    // Post Features
-    let postImagesList = [];
-
-    function openPostModal() {
-        document.getElementById('postModalOverlay').style.display = 'flex';
-        postImagesList = [...currentImages];
-        document.getElementById('postCaptionBox').value = '';
-        document.getElementById('postMessage').innerText = '';
-        
-        const btn = document.getElementById('postSubmitBtn');
-        btn.disabled = false;
-        btn.innerText = "Publish Now";
-        btn.style.background = "#0066ff";
-        
-        renderPostPreviews();
-    }
-
-    function closePostModal() {
-        document.getElementById('postModalOverlay').style.display = 'none';
-    }
-
-    function renderPostPreviews() {
-        const container = document.getElementById('postPreviewContainer');
-        container.innerHTML = '';
-        
-        postImagesList.forEach((imgUrl, index) => {
-            const item = document.createElement('div');
-            item.className = 'post-preview-item';
-            
-            const img = document.createElement('img');
-            img.src = imgUrl;
-            
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'post-remove-btn';
-            removeBtn.innerHTML = '×';
-            removeBtn.onclick = () => {
-                postImagesList.splice(index, 1);
-                renderPostPreviews();
-            };
-            
-            item.appendChild(img);
-            item.appendChild(removeBtn);
-            container.appendChild(item);
-        });
-    }
-
-    async function submitPost() {
-        const msgEl = document.getElementById('postMessage');
-        const btn = document.getElementById('postSubmitBtn');
-        
-        if (postImagesList.length === 0) {
-            msgEl.style.color = "#ff4d4d";
-            msgEl.innerText = "Please keep at least one media file.";
-            return;
-        }
-
-        btn.disabled = true;
-        msgEl.style.color = "#ffb84d";
-        msgEl.innerText = "";
-
-        const caption = document.getElementById('postCaptionBox').value;
-        const account = document.getElementById('postAccountSelect').value;
-        const renderApiUrl = 'https://crosspost-o4h5.onrender.com/api/publish';
-        
-        // 10 ti images er beshi hole auto split korbe (Chunking logic)
-        const chunkSize = 10;
-        const imageChunks = [];
-        for (let i = 0; i < postImagesList.length; i += chunkSize) {
-            imageChunks.push(postImagesList.slice(i, i + chunkSize));
-        }
-
-        let successCount = 0;
-
-        for (let chunkIndex = 0; chunkIndex < imageChunks.length; chunkIndex++) {
-            const currentChunk = imageChunks[chunkIndex];
-            const formData = new FormData();
-            
-            // Fetch blobs for this chunk
-            for (let i = 0; i < currentChunk.length; i++) {
-                try {
-                    let overallIndex = (chunkIndex * chunkSize) + i + 1;
-                    // Real-time button text update for image preparation
-                    btn.innerText = `Preparing Image ${overallIndex} of ${postImagesList.length}...`;
-                    
-                    const response = await fetch(`${API_BASE}/api/download?url=${encodeURIComponent(currentChunk[i])}`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to download image ${overallIndex}`);
-                    }
-                    const rawBlob = await response.blob();
-                    
-                    const highQualityBlob = await new Promise((resolve) => {
-                        const img = new Image();
-                        const objUrl = URL.createObjectURL(rawBlob);
-                        
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0);
-                            
-                            canvas.toBlob((b) => {
-                                resolve(b || rawBlob);
-                                URL.revokeObjectURL(objUrl);
-                            }, 'image/jpeg', 1.0);
-                        };
-                        
-                        img.onerror = () => {
-                            resolve(rawBlob);
-                            URL.revokeObjectURL(objUrl);
-                        };
-                        
-                        img.src = objUrl;
-                    });
-                    
-                    const fileName = `post_image_${overallIndex}.jpg`;
-                    const file = new File([highQualityBlob], fileName, { type: 'image/jpeg' });
-                    
-                    formData.append('images', file);
-                } catch (err) {
-                    console.error('Failed to fetch image blob:', err);
-                }
-            }
-
-            formData.append('caption', chunkIndex === 0 ? caption : `${caption} (Part ${chunkIndex + 1})`);
-            formData.append('account', account);
-            formData.append('facebook', document.getElementById('postFb').checked);
-            formData.append('instagram', document.getElementById('postIg').checked);
-            formData.append('tiktok', document.getElementById('postTt').checked);
-
-            try {
-                // Real-time button text update for API upload
-                if (imageChunks.length > 1) {
-                    btn.innerText = `Publishing Part ${chunkIndex + 1} of ${imageChunks.length}... Please Wait`;
-                } else {
-                    btn.innerText = `Publishing ${currentChunk.length} Media... Please Wait`;
-                }
-
-                const res = await fetch(renderApiUrl, { method: 'POST', body: formData });
-                const data = await res.json();
-                
-                if(res.ok) {
-                    successCount++;
-                } else {
-                    throw new Error(data.message || "Upload failed");
-                }
-            } catch (err) {
-                msgEl.style.color = "#ff4d4d";
-                msgEl.innerText = `Failed! Files might be too large or Server Timeout.`;
-                btn.disabled = false;
-                btn.innerText = "Publish Now";
-                return;
-            }
-        }
-
-        if (successCount === imageChunks.length) {
-            msgEl.style.color = "#4caf50";
-            msgEl.innerText = "";
-            btn.innerText = "Publish Done !";
-            btn.style.background = "#28a745";
-            
-            setTimeout(() => {
-                closePostModal();
-                btn.disabled = false;
-                btn.innerText = "Publish Now";
-                btn.style.background = "#0066ff";
-            }, 3000);
-        } else {
-            btn.disabled = false;
-            btn.innerText = "Publish Now";
-        }
-    }
-
-    // Server-Sent Events (SSE) Logic for Real-time Notifications
-    let sseSource;
-    function connectSSE() {
-        if (sseSource) sseSource.close();
-        
-        // This endpoint will be added to the backend code (next step)
-        sseSource = new EventSource('https://crosspost-o4h5.onrender.com/api/notifications');
-        
-        sseSource.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            showNotification(data.message);
-        };
-    }
-
-    function showNotification(message) {
-        const toast = document.getElementById('notificationToast');
-        toast.innerText = message;
-        toast.style.display = 'block';
-        toast.style.opacity = '1';
-        
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => { toast.style.display = 'none'; }, 300);
-        }, 4000);
-    }
-
-    // Connect to SSE on load
-    window.addEventListener('DOMContentLoaded', () => {
-        connectSSE();
-    });
 
 </script>
 </body>

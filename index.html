@@ -346,7 +346,7 @@
         products.forEach(p => {
             const card = document.createElement('div');
             card.className = 'product-card';
-            const coverImg = p.thumbnail || (p.images && p.images.length > 0 ? p.images[0] : '');
+            const coverImg = (p.images && p.images.length > 0 ? p.images[0] : '') || p.thumbnail || '';
             const image = document.createElement('img');
             image.src = coverImg;
             image.alt = p.title || 'Product';
